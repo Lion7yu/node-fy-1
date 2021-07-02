@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { translate } from "./main";
 const { Command } = require('commander');
 
@@ -8,7 +9,7 @@ program
   .name('翻译')
   .usage('<English>')
   .argument('<English>')
-  .action((english)=>{
+  .action((english: string)=>{
     translate(english)
   })
 program.parse(process.argv)

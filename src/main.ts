@@ -1,10 +1,15 @@
+import { IncomingMessage } from "http";
 import { appId, appSecret } from "./private";
 
 const https = require('https');
 const querystring = require('querystring')
 const md5 = require('md5')
 
-const errorMap = {
+type ErrorMap = {
+  [key: string]:string | undefined
+}
+
+const errorMap: ErrorMap = {
   52001:'请求超时',
   52002:'系统错误',
   52003:'未授权用户',
@@ -16,10 +21,9 @@ const errorMap = {
   58001:'译文语言方向不支持',
   58002:'服务当前已关闭',
   90107:'认证未通过或未生效',
-  unknown:'服务器繁忙'
 }
 
-export const translate = (word)=>{
+export const translate = (word:string)=>{
 
   const salt = Math.random();
   //random 写在外面和写在里面不一样
@@ -52,11 +56,11 @@ export const translate = (word)=>{
     method: 'GET'
   };
 
-  const request = https.request(options, (response) => {
+  const request = https.request(options, (response:IncomingMessage) => {
     //一块代码
-    let chunks = [];
+    let chunks:Buffer[] = [];
     //每次下载的数据
-    response.on('data', (chunk) => {
+    response.on('data', (chunk:Buffer) => {
       chunks.push(chunk)
     });
     response.on('end',()=>{
@@ -88,7 +92,7 @@ export const translate = (word)=>{
     })
   });
 
-  request.on('error', (e) => {
+  request.on('error', (e:string) => {
     console.error(e);
   });
   request.end();
