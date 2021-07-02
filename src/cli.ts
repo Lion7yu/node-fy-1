@@ -9,7 +9,6 @@ program
   .usage('<English>')
   .argument('<English>')
   .action((english)=>{
-    console.log(english)
     translate(english)
   })
 program.parse(process.argv)
