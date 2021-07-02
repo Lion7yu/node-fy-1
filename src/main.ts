@@ -4,6 +4,13 @@ const https = require('https');
 const querystring = require('querystring')
 const md5 = require('md5')
 
+const errorMap = {
+  52003:'用户认证失败',
+  52004:'error2',
+  52005:'error3',
+  unknown:'服务器繁忙'
+}
+
 export const translate = (word)=>{
 
   const salt = Math.random();
@@ -14,7 +21,7 @@ export const translate = (word)=>{
     q: word,
     from:'en',
     to:'zh',
-    appid: appId+1,
+    appid: appId,
     salt: salt,
     sign:sign
     //q=banana&from=en&to=zh&appid=20210701000877422&salt=1435660288&sign=4b807764922dfd52502f285412b0afed
@@ -51,11 +58,7 @@ export const translate = (word)=>{
       }
       const object: BaiduResult = JSON.parse(string)
       if(object.error_code){
-        console.log(object.error_code)
-        if(object.error_code === '52003'){
-          console.error('用户认证失败');
-        }
-        console.error(object.error_msg);
+          console.error(errorMap[object.error_code] || object.error_msg);
         //退出当前进程
         process.exit(2)
       }else{
