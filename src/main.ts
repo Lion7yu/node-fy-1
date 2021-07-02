@@ -5,9 +5,17 @@ const querystring = require('querystring')
 const md5 = require('md5')
 
 const errorMap = {
-  52003:'用户认证失败',
-  52004:'error2',
-  52005:'error3',
+  52001:'请求超时',
+  52002:'系统错误',
+  52003:'未授权用户',
+  54000:'必填参数为空',
+  54001:'前面错误',
+  54003:'访问频率受限',
+  54005:'长 query 请求频繁',
+  58000:'客户端IP非法',
+  58001:'译文语言方向不支持',
+  58002:'服务当前已关闭',
+  90107:'认证未通过或未生效',
   unknown:'服务器繁忙'
 }
 
@@ -16,15 +24,25 @@ export const translate = (word)=>{
   const salt = Math.random();
   //random 写在外面和写在里面不一样
   const sign = md5(appId + word + salt + appSecret);
+  let from, to;
 
+  if(/[a-zA-Z]/.test(word[0])){
+    // 英译中
+    from = 'en'
+    to = 'zh'
+  }else{
+    // 中译英
+    from = 'zh',
+    to = 'en'
+  }
+  
   const query:string =  querystring.stringify({
     q: word,
-    from:'en',
-    to:'zh',
+    from: from,
+    to: to,
     appid: appId,
     salt: salt,
-    sign:sign
-    //q=banana&from=en&to=zh&appid=20210701000877422&salt=1435660288&sign=4b807764922dfd52502f285412b0afed
+    sign: sign,
   })
 
   const options = {
@@ -62,7 +80,9 @@ export const translate = (word)=>{
         //退出当前进程
         process.exit(2)
       }else{
-        console.log(object.trans_result[0].dst)
+        object.trans_result.map(obj=>{
+          console.log(obj.dst)
+        })
         process.exit(0)
       }
     })
